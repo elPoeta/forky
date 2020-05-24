@@ -4,6 +4,7 @@ const { PORT } = require('./config/keys');
 
 require('./bootstrapApp/db')();
 require('./bootstrapApp/parser')(app);
+require('./bootstrapApp/router')(app);
 
 const server = app.listen(PORT, error => {
   if (error) {
