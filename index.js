@@ -1,7 +1,9 @@
 const express = require('express');
 const app = express();
 const { PORT } = require('./config/keys');
+const logger = require('./middleware/logger');
 
+app.use(logger);
 require('./bootstrapApp/db')();
 require('./bootstrapApp/parser')(app);
 require('./bootstrapApp/router')(app);
