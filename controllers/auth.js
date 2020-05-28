@@ -5,7 +5,7 @@ const User = require('../models/user');
 
 exports.register = async(async (req, res, next) => {
     const { name, alias, email, role, password, confirmPassword } = req.body;
-    if (!isEmpty(password) || !isEmpty(confirmPassword) || password != confirmPassword) {
+    if (isEmpty(password) || isEmpty(confirmPassword) || password != confirmPassword) {
         return next(new ErrorResponse("password and confirm password not equals or empty", 404));
     }
     const user = new User({
@@ -16,11 +16,7 @@ exports.register = async(async (req, res, next) => {
         password
     });
     await user.save();
-    res.status(200).json({
-        succes: true,
-        status: 200,
-        data: user
-    })
+    sendTokenResponse(user, 200, res);
 });
 
 exports.login = async(async (req, res, next) => {
@@ -32,22 +28,26 @@ exports.login = async(async (req, res, next) => {
     if (!user) {
         return next(new ErrorResponse("Invalid email", 400));
     }
-    console.log('user', user)
-    if (password != user.password) {
+    const isValidPassword = await user.isValidPassword(password);
+    if (!isValidPassword) {
         return next(new ErrorResponse("Invalid password", 401));
     }
     user.password = undefined;
-    res.status(200).json({
-        succes: true,
-        status: 200,
-        data: user
-    })
+    sendTokenResponse(user, 200, res);
 });
 
 exports.logout = async((req, res, next) => {
     res.status(200).json({
-        succes: true,
-        status: 200,
-        data: { test: "ok" }
-    })
+        success: true,
+        data: {}
+    });
 });
+
+const sendTokenResponse = (user, statusCode, res) => {
+    const token = user.getSignedJwtToken();
+    res.status(statusCode)
+        .json({
+            success: true,
+            token
+        });
+};
