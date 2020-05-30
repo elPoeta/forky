@@ -8,14 +8,6 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Please add a name']
   },
-  alias: {
-    type: String,
-    unique: true,
-    minlength: 3,
-    maxlength: 25,
-    lowercase: true,
-    required: [true, 'Please add a nick name']
-  },
   email: {
     type: String,
     required: [true, 'Please add an email'],

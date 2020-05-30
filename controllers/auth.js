@@ -4,13 +4,12 @@ const ErrorResponse = require('../utils/errorResponse');
 const User = require('../models/user');
 
 exports.register = async(async (req, res, next) => {
-    const { name, alias, email, role, password, confirmPassword } = req.body;
+    const { name, email, role, password, confirmPassword } = req.body;
     if (isEmpty(password) || isEmpty(confirmPassword) || password != confirmPassword) {
         return next(new ErrorResponse("password and confirm password not equals or empty", 404));
     }
     const user = new User({
         name,
-        alias,
         email,
         role,
         password
