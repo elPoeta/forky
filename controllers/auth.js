@@ -1,6 +1,7 @@
 const async = require('../middleware/async');
 const isEmpty = require('../utils/isEmpty');
 const ErrorResponse = require('../utils/errorResponse');
+const { JWT_COOKIE_EXPIRE_IN_DAYS } = require('../config/keys');
 const User = require('../models/user');
 
 exports.register = async(async (req, res, next) => {
@@ -15,7 +16,7 @@ exports.register = async(async (req, res, next) => {
         password
     });
     await user.save();
-    sendTokenResponse(user, 200, res);
+    sendTokenResponse(user, 201, res);
 });
 
 exports.login = async(async (req, res, next) => {
@@ -44,7 +45,14 @@ exports.logout = async((req, res, next) => {
 
 const sendTokenResponse = (user, statusCode, res) => {
     const token = user.getSignedJwtToken();
+    const options = {
+        expires: new Date(
+            Date.now() + JWT_COOKIE_EXPIRE_IN_DAYS * 24 * 60 * 60 * 1000
+        ),
+        httpOnly: true
+    }
     res.status(statusCode)
+        .cookie('token', token, options)
         .json({
             success: true,
             token
